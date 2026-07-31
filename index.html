@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KimoTube - Free YouTube Video & MP3 Downloader</title>
+  <meta name="description" content="Download YouTube videos, shorts, playlists in HD quality for free. KimoTube is the fastest YouTube downloader with MP4, WebM, and MP3 support.">
+  <meta name="keywords" content="youtube downloader, download youtube videos, free youtube downloader, yt downloader, mp4 downloader, mp3 downloader, shorts downloader">
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="KimoTube">
+  <meta name="theme-color" content="#FF3B5C">
+
+  <link rel="canonical" href="https://kimotube.app/">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="KimoTube - Free YouTube Video & MP3 Downloader">
+  <meta property="og:description" content="Download YouTube videos, shorts, and playlists in HD quality for free. Fast, secure, and no registration required.">
+  <meta property="og:image" content="https://kimotube.app/assets/og-image.png">
+  <meta property="og:url" content="https://kimotube.app/">
+  <meta property="og:site_name" content="KimoTube">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="KimoTube - Free YouTube Video & MP3 Downloader">
+  <meta name="twitter:description" content="Download YouTube videos, shorts, and playlists in HD quality for free. Fast, secure, and no registration required.">
+  <meta name="twitter:image" content="https://kimotube.app/assets/og-image.png">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "KimoTube",
+    "url": "https://kimotube.app/",
+    "description": "Free YouTube video and MP3 downloader. Download videos, shorts, and playlists in various qualities including HD, 4K, and 8K.",
+    "applicationCategory": "Multimedia",
+    "operatingSystem": "All",
+    "browserRequirements": "Requires JavaScript",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Organization",
+      "name": "KimoTube"
+    }
+  }
+  </script>
+
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="apple-touch-icon" href="assets/favicon.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/animations.css">
+  <link rel="stylesheet" href="styles/responsive.css">
+  <link rel="stylesheet" href="styles/dark.css">
+
+  <link rel="manifest" href="manifest.json">
+
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="KimoTube">
+  <meta name="mobile-web-app-capable" content="yes">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="navbar-inner">
+      <a href="/" class="navbar-logo" aria-label="KimoTube Home">
+        <img src="assets/logo.svg" alt="KimoTube Logo" width="120" height="36">
+      </a>
+      <div class="navbar-actions">
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+          <span class="material-symbols-outlined">dark_mode</span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" id="heroSection" aria-label="YouTube Downloader">
+      <div class="hero-bg" aria-hidden="true">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+      </div>
+
+      <div class="hero-content">
+        <div class="hero-logo" aria-hidden="true">
+          <svg viewBox="0 0 44 44" fill="none">
+            <path d="M22 8l18 14-18 14V8z" fill="#fff"/>
+          </svg>
+        </div>
+
+        <h1 class="hero-title">
+          Download YouTube<br>
+          <span class="highlight">Fast & Free</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Paste a YouTube link and download videos, shorts, or playlists in any quality.
+          No sign-up required, completely free.
+        </p>
+
+        <!-- Input Section -->
+        <div class="input-section">
+          <div class="input-wrapper" role="group" aria-label="URL input">
+            <span class="material-symbols-outlined input-icon" aria-hidden="true">link</span>
+            <input
+              type="url"
+              id="urlInput"
+              placeholder="Paste YouTube link here..."
+              autocomplete="off"
+              autocorrect="off"
+              autocapitalize="off"
+              spellcheck="false"
+              aria-label="YouTube URL input"
+              enterkeyhint="go"
+            >
+            <div class="input-actions">
+              <button class="btn-icon" id="pasteBtn" aria-label="Paste from clipboard" title="Paste">
+                <span class="material-symbols-outlined">content_paste</span>
+              </button>
+              <button class="btn-icon" id="clearBtn" aria-label="Clear input" title="Clear">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+              <button class="btn-primary ripple-btn" id="analyzeBtn" aria-label="Analyze video">
+                <span class="material-symbols-outlined" style="font-size:20px">search</span>
+                Analyze
+              </button>
+            </div>
+          </div>
+
+          <div class="input-hint">
+            <span class="material-symbols-outlined" style="font-size:16px">keyboard</span>
+            Press <kbd>Ctrl+V</kbd> to paste &bull; <kbd>Enter</kbd> to analyze &bull; <kbd>Esc</kbd> to clear
+          </div>
+
+          <div class="examples" role="group" aria-label="Example links">
+            <button class="example-btn" data-url="https://www.youtube.com/watch?v=dQw4w9WgXcQ">
+              <span class="material-symbols-outlined" style="font-size:14px">play_circle</span> Example Video
+            </button>
+            <button class="example-btn" data-url="https://youtu.be/dQw4w9WgXcQ">
+              <span class="material-symbols-outlined" style="font-size:14px">link</span> Short Link
+            </button>
+            <button class="example-btn" data-url="https://www.youtube.com/shorts/dQw4w9WgXcQ">
+              <span class="material-symbols-outlined" style="font-size:14px">short_stories</span> Shorts
+            </button>
+            <button class="example-btn" data-url="https://www.youtube.com/playlist?list=PLrAXtmErZgOeiKm4sgNOknGvNjby9efdf">
+              <span class="material-symbols-outlined" style="font-size:14px">playlist_play</span> Playlist
+            </button>
+          </div>
+        </div>
+
+        <!-- Status Message -->
+        <div class="status-message" id="statusMsg" role="alert" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- Loading Section -->
+    <section class="loading-section" id="loadingSection" aria-label="Loading" role="status">
+      <div class="loading-spinner">
+        <div class="spinner" aria-hidden="true"></div>
+        <p class="loading-text">Fetching video information...</p>
+      </div>
+      <div class="loading-skeleton" aria-hidden="true">
+        <div class="skeleton skeleton-thumb"></div>
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-text"></div>
+        <div class="skeleton skeleton-btn"></div>
+        <div class="skeleton skeleton-btn"></div>
+        <div class="skeleton skeleton-btn"></div>
+      </div>
+    </section>
+
+    <!-- Results Section -->
+    <section class="results-section" id="resultsSection" aria-label="Download results">
+      <div class="hero-content">
+        <!-- Video Info Card -->
+        <div id="videoCard"></div>
+
+        <!-- Download Section -->
+        <div class="download-section" id="downloadSection">
+          <div class="download-header">
+            <h2 class="download-title">
+              <span class="material-symbols-outlined" style="font-size:22px;vertical-align:middle">download</span>
+              Available Downloads
+            </h2>
+            <span class="download-count" id="downloadCount">Select a format</span>
+          </div>
+          <div class="format-filter" id="formatFilters"></div>
+          <div class="download-list" id="downloadList" role="list" aria-label="Download formats">
+            <div class="empty-state" style="text-align:center;padding:40px;color:var(--text-tertiary)">
+              <span class="material-symbols-outlined" style="font-size:48px;display:block;margin-bottom:12px">cloud_download</span>
+              <p>Enter a YouTube URL above to see available download formats.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Playlist Section -->
+        <div class="playlist-section" id="playlistSection"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="hero-content">
+      <p>
+        &copy; <span id="year"></span> KimoTube &bull;
+        Built with &hearts; &bull;
+        Not affiliated with YouTube &bull;
+        <a href="https://github.com/kimotube/kimotube" target="_blank" rel="noopener">GitHub</a>
+      </p>
+      <p style="margin-top:8px;font-size:12px">
+        All trademarks and copyrights belong to their respective owners.
+      </p>
+    </div>
+  </footer>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite" aria-relevant="additions"></div>
+
+  <!-- Scripts -->
+  <script src="js/utils.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/download.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

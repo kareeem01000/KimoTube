@@ -1,0 +1,84 @@
+/* ============================================
+   KimoTube - Responsive Styles
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .hero { padding: 120px 20px 60px; }
+  .playlist-header { flex-direction: column; text-align: center; }
+  .playlist-cover { width: 100px; height: 100px; }
+}
+
+@media (max-width: 768px) {
+  .navbar-inner { padding: 0 16px; }
+  .navbar-logo span { font-size: 18px; }
+
+  .hero { padding: 100px 16px 48px; min-height: auto; }
+  .hero-title { font-size: clamp(1.6rem, 6vw, 2.2rem); }
+  .hero-subtitle { font-size: 0.95rem; margin-bottom: 28px; }
+
+  .input-wrapper { flex-wrap: wrap; padding: 4px; }
+  .input-wrapper input { padding: 12px 8px; font-size: 15px; }
+  .input-actions { width: 100%; justify-content: flex-end; padding: 4px; }
+  .input-actions .btn-primary { flex: 1; justify-content: center; }
+
+  .video-card-body { padding: 16px; }
+  .video-meta { gap: 10px; }
+  .video-meta-item { font-size: 13px; }
+
+  .download-section { padding: 16px; }
+  .download-item { grid-template-columns: 1fr; gap: 12px; }
+  .download-item-info { gap: 10px; }
+  .download-btn { width: 100%; justify-content: center; }
+
+  .download-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+
+  .playlist-items { padding: 0 16px 16px; }
+
+  .toast-container { left: 16px; right: 16px; top: 80px; }
+  .toast { max-width: 100%; }
+
+  .thumbnail-actions { flex-direction: column; }
+  .thumbnail-actions .btn-secondary { justify-content: center; }
+}
+
+@media (max-width: 480px) {
+  .hero-logo { width: 60px; height: 60px; border-radius: 18px; }
+  .hero-logo svg { width: 32px; height: 32px; }
+
+  .hero-title { font-size: 1.5rem; }
+  .hero-subtitle { font-size: 0.9rem; }
+
+  .input-wrapper input { font-size: 14px; }
+  .input-wrapper .input-icon { display: none; }
+
+  .examples { display: none; }
+
+  .video-card-body { padding: 12px; }
+  .video-title { font-size: 1rem; }
+
+  .download-item { padding: 12px; }
+  .download-quality { font-size: 13px; }
+  .download-tags { display: none; }
+
+  .playlist-item { flex-direction: column; align-items: flex-start; }
+  .playlist-item-thumb { width: 100%; height: auto; aspect-ratio: 16/9; }
+
+  .filter-btn { font-size: 12px; padding: 4px 12px; }
+
+  .navbar-logo span { display: none; }
+}
+
+@media (max-height: 600px) {
+  .hero { padding-top: 80px; min-height: auto; }
+  .hero-logo { width: 48px; height: 48px; margin-bottom: 12px; }
+  .hero-title { font-size: 1.5rem; }
+  .hero-subtitle { margin-bottom: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

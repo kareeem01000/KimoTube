@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <defs>
+    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF3B5C"/>
+      <stop offset="50%" stop-color="#FF6B3D"/>
+      <stop offset="100%" stop-color="#FFA726"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="8" width="44" height="44" rx="12" fill="url(#logoGrad)"/>
+  <path d="M24 18l14 10.5-14 10.5V18z" fill="#fff"/>
+  <text x="58" y="42" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="700" fill="#1a1a2e" letter-spacing="-0.5">Kimo</text>
+  <text x="140" y="42" font-family="Inter, system-ui, sans-serif" font-size="32" font-weight="300" fill="#FF3B5C" letter-spacing="-0.5">Tube</text>
+</svg>

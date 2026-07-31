@@ -1,0 +1,7 @@
+# KimoTube - Robots.txt
+# Allow all crawlers full access
+
+User-agent: *
+Allow: /
+
+Sitemap: https://kimotube.app/sitemap.xml
