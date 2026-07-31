@@ -7,23 +7,23 @@ const STATIC_CACHE_NAME = 'kimotube-static-v1';
 const API_CACHE_NAME = 'kimotube-api-v1';
 
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/styles/style.css',
-  '/styles/animations.css',
-  '/styles/responsive.css',
-  '/styles/dark.css',
-  '/js/utils.js',
-  '/js/api.js',
-  '/js/download.js',
-  '/js/ui.js',
-  '/js/app.js',
-  '/assets/logo.svg',
-  '/assets/favicon.svg',
-  '/manifest.json'
+  './',
+  './index.html',
+  './styles/style.css',
+  './styles/animations.css',
+  './styles/responsive.css',
+  './styles/dark.css',
+  './js/utils.js',
+  './js/api.js',
+  './js/download.js',
+  './js/ui.js',
+  './js/app.js',
+  './assets/logo.svg',
+  './assets/favicon.svg',
+  './manifest.json'
 ];
 
-const OFFLINE_URL = '/offline/index.html';
+const OFFLINE_URL = './offline/index.html';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -89,7 +89,7 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (url.origin === self.location.origin) {
-    if (url.pathname.startsWith('/assets/') || url.pathname.startsWith('/styles/') || url.pathname.startsWith('/js/')) {
+    if (url.pathname.includes('/assets/') || url.pathname.includes('/styles/') || url.pathname.includes('/js/')) {
       event.respondWith(
         caches.match(request).then((cached) => {
           return cached || fetch(request).then((response) => {
@@ -102,7 +102,7 @@ self.addEventListener('fetch', (event) => {
       return;
     }
 
-    if (url.pathname === '/' || url.pathname === '/index.html') {
+    if (url.pathname.endsWith('/') || url.pathname.endsWith('/index.html')) {
       event.respondWith(
         caches.match(request).then((cached) => {
           return cached || fetch(request);

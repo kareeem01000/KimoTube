@@ -25,6 +25,8 @@ const KimoUI = (() => {
       heroSection: document.getElementById('heroSection'),
       examples: document.querySelectorAll('.example-btn'),
       inputHint: document.querySelector('.input-hint'),
+      backendStatus: document.getElementById('backendStatus'),
+      backendStatusText: document.getElementById('backendStatusText'),
       toastContainer: document.getElementById('toastContainer')
     });
   }
@@ -86,7 +88,10 @@ const KimoUI = (() => {
         e.preventDefault();
         const url = downloadBtn.dataset.url;
         const quality = downloadBtn.dataset.quality;
-        window.KimoDownload.triggerDownload(url, quality);
+        window.KimoDownload.triggerDownload(url, quality, {
+          merge: downloadBtn.dataset.merge,
+          sourceUrl: downloadBtn.dataset.sourceUrl
+        });
       }
       const thumbBtn = e.target.closest('[data-thumb-action]');
       if (thumbBtn) {
@@ -286,6 +291,31 @@ const KimoUI = (() => {
     elements.statusMsg.textContent = '';
   }
 
+  function setBackendStatus(state, base, ytDlp) {
+    const el = elements.backendStatus;
+    if (!el) return;
+    el.hidden = false;
+    el.classList.remove('connected', 'offline', 'checking');
+
+    if (state === 'checking') {
+      el.classList.add('checking');
+      elements.backendStatusText.textContent = 'Checking download server...';
+      return;
+    }
+
+    if (state === 'connected') {
+      el.classList.add('connected');
+      const ver = ytDlp ? ` (yt-dlp ${ytDlp})` : '';
+      const host = base ? base.replace(/^https?:\/\//, '') : '';
+      elements.backendStatusText.innerHTML =
+        `Real downloads active${ver} <span class="backend-url">${window.KimoUtils.escapeHtml(host)}</span>`;
+      return;
+    }
+
+    el.classList.add('offline');
+    elements.backendStatusText.textContent = 'Download server offline — demo mode';
+  }
+
   function clearResults() {
     if (elements.resultsSection) elements.resultsSection.classList.remove('show');
     if (elements.videoCard) elements.videoCard.innerHTML = '';
@@ -347,7 +377,7 @@ const KimoUI = (() => {
     elements.videoCard.classList.add('scale-in');
   }
 
-  function renderFormats(formats) {
+  function renderFormats(formats, sourceUrl) {
     if (!elements.downloadList || !elements.formatFilters) return;
 
     const extensions = [...new Set(formats.map(f => f.extension))];
@@ -363,15 +393,15 @@ const KimoUI = (() => {
         elements.formatFilters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         activeFormatFilter = btn.dataset.filter;
-        renderFormatList(formats);
+        renderFormatList(formats, sourceUrl);
       });
     });
 
     activeFormatFilter = 'all';
-    renderFormatList(formats);
+    renderFormatList(formats, sourceUrl);
   }
 
-  function renderFormatList(formats) {
+  function renderFormatList(formats, sourceUrl) {
     if (!elements.downloadList) return;
 
     let filtered = formats;
@@ -403,6 +433,8 @@ const KimoUI = (() => {
       const quality = window.KimoUtils.escapeHtml(fmt.quality);
       const ext = window.KimoUtils.escapeHtml(fmt.extension);
       const downloadUrl = window.KimoUtils.escapeHtml(fmt.url);
+      const mergeType = fmt.merge ? window.KimoUtils.escapeHtml(fmt.merge) : '';
+      const srcUrl = sourceUrl ? window.KimoUtils.escapeHtml(sourceUrl) : '';
 
       return `
         <div class="download-item fade-in stagger-${(i % 8) + 1}" style="animation-delay:${i * 0.05}s">
@@ -417,7 +449,7 @@ const KimoUI = (() => {
               ${fmt.note ? `<span class="download-tag">${window.KimoUtils.escapeHtml(fmt.note)}</span>` : ''}
             </div>
           </div>
-          <button class="download-btn ripple-btn" data-url="${downloadUrl}" data-quality="${quality}">
+          <button class="download-btn ripple-btn" data-url="${downloadUrl}" data-quality="${quality}"${mergeType ? ` data-merge="${mergeType}"` : ''}${srcUrl ? ` data-source-url="${srcUrl}"` : ''}>
             <span class="material-symbols-outlined" style="font-size:18px">download</span> Download
           </button>
         </div>
@@ -491,6 +523,7 @@ const KimoUI = (() => {
     hideLoading,
     showStatus,
     hideStatus,
+    setBackendStatus,
     clearResults,
     renderVideoInfo,
     renderFormats,

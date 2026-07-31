@@ -404,6 +404,54 @@ ul { list-style: none; }
   color: var(--text-secondary);
 }
 
+/* ============= BACKEND STATUS ============= */
+.backend-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-top: 8px;
+}
+
+.backend-status[hidden] {
+  display: none;
+}
+
+.backend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.backend-status.connected .backend-dot {
+  background: #2ecc71;
+  box-shadow: 0 0 6px rgba(46, 204, 113, 0.6);
+}
+
+.backend-status.offline .backend-dot {
+  background: #e74c3c;
+  box-shadow: 0 0 6px rgba(231, 76, 60, 0.6);
+}
+
+.backend-status.checking .backend-dot {
+  background: #f39c12;
+  animation: backend-pulse 1s ease-in-out infinite;
+}
+
+@keyframes backend-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.backend-status .backend-url {
+  color: var(--text-tertiary);
+  font-size: 11px;
+}
+
 /* ============= EXAMPLES ============= */
 .examples {
   display: flex;

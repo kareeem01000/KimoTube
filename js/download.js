@@ -5,9 +5,13 @@
 const KimoDownload = (() => {
   let activeDownloads = new Set();
 
-  async function triggerDownload(url, quality) {
+  async function triggerDownload(url, quality, opts = {}) {
     if (!url) {
-      demoDownload(quality);
+      if (opts.merge && opts.sourceUrl) {
+        await mergeDownload(opts.sourceUrl, opts.merge, quality);
+      } else {
+        demoDownload(quality);
+      }
       return;
     }
 
@@ -34,6 +38,32 @@ const KimoDownload = (() => {
     }
   }
 
+  async function mergeDownload(sourceUrl, mergeType, quality) {
+    window.KimoUI.showToast(`Preparing ${quality || 'download'} on server, please wait...`, 'info');
+    try {
+      const { blob, filename } = await window.KimoAPI.fetchMergedDownload(sourceUrl, mergeType);
+      if (!blob || blob.size === 0) throw new Error('Empty file received from server');
+      saveBlob(blob, filename);
+      window.KimoUI.showToast(`Download ready: ${filename}`, 'success');
+    } catch (error) {
+      console.error('[KimoTube] Merge download error:', error);
+      window.KimoUI.showToast(`Download failed: ${error.message}`, 'error');
+    }
+  }
+
+  function saveBlob(blob, filename) {
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename || 'download.mp4';
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    }, 100);
+  }
+
   function demoDownload(quality) {
     const content = [
       'KimoTube - Demo Download',
@@ -46,8 +76,9 @@ const KimoDownload = (() => {
       `Generated: ${new Date().toISOString()}`,
       '',
       'To enable real downloads:',
-      '1. Deploy this site to GitHub Pages or any web server (https).',
-      '2. The site will then use the Cobalt API automatically.'
+      'Start the KimoTube backend (node server.js) and refresh this page.',
+      'The download server indicator below the input must show green.',
+      'Then analyze the video again and click a real format button.'
     ].join('\n');
 
     try {

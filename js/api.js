@@ -4,14 +4,89 @@
 
 const KimoAPI = (() => {
   const CONFIG = {
+    backend: {
+      baseUrl: 'https://kimotube-backend.onrender.com'
+    },
     cobalt: {
       baseUrl: 'https://api.cobalt.tools',
-      timeout: 8000,
-      proxy: 'https://corsproxy.io/?'
+      timeout: 8000
     },
     retryCount: 1,
     retryDelay: 500
   };
+
+  function getBackendCandidates() {
+    const candidates = [];
+    try {
+      const custom = localStorage.getItem('kimotube-backend-url');
+      if (custom && custom.trim()) candidates.push(custom.trim().replace(/\/+$/, ''));
+    } catch (e) {}
+    candidates.push('http://localhost:3000');
+    if (candidates.indexOf(CONFIG.backend.baseUrl) === -1) candidates.push(CONFIG.backend.baseUrl);
+    return candidates;
+  }
+
+  let activeBackend = '';
+
+  async function callBackendInfo(url) {
+    const candidates = activeBackend ? [activeBackend] : getBackendCandidates();
+    let lastError = null;
+
+    for (const base of candidates) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000);
+
+      console.log('[KimoTube API] Calling backend:', base);
+      try {
+        const response = await fetch(`${base}/api/info`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify({ url }),
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          let msg = `Backend error: ${response.status}`;
+          try {
+            const errData = await response.json();
+            msg = errData.error || msg;
+          } catch (e) {}
+          throw new Error(msg);
+        }
+
+        const data = await response.json();
+        if (!data.ok || !data.data) throw new Error(data.error || 'Backend returned no data');
+        activeBackend = base;
+        return data.data;
+      } catch (error) {
+        lastError = error.name === 'AbortError' ? new Error('Backend request timed out') : error;
+        console.warn('[KimoTube API] Backend candidate failed:', base, lastError.message);
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+    throw lastError || new Error('No backend available');
+  }
+
+  async function checkBackend() {
+    const candidates = getBackendCandidates();
+    for (const base of candidates) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 4000);
+      try {
+        const response = await fetch(`${base}/api/health`, { signal: controller.signal });
+        if (response.ok) {
+          const data = await response.json();
+          activeBackend = base;
+          return { connected: true, base, ytDlp: data.ytDlp || '' };
+        }
+      } catch (e) {
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+    return { connected: false, base: '', ytDlp: '' };
+  }
 
   function isFileProtocol() {
     return window.location.protocol === 'file:';
@@ -25,14 +100,16 @@ const KimoAPI = (() => {
 
     const payload = {
       url: url,
-      videoQuality: options.videoQuality || '1080',
-      filenamePattern: 'basic',
+      videoQuality: '1080',
+      downloadMode: 'auto',
+      audioFormat: 'mp3',
+      audioBitrate: '128',
+      filenameStyle: 'basic',
       disableMetadata: false,
-      aFormat: options.audioFormat || 'mp3',
-      filenameStyle: 'classic',
-      isAudioOnly: options.audioOnly || false,
-      isNoTTWatermark: true,
-      tunnel: 'default'
+      alwaysProxy: false,
+      localProcessing: 'disabled',
+      youtubeVideoCodec: 'h264',
+      youtubeVideoContainer: 'mp4'
     };
 
     const headers = {
@@ -108,6 +185,63 @@ const KimoAPI = (() => {
       }
     }
     throw lastError;
+  }
+
+  function parseBackendResponse(data, originalUrl) {
+    return {
+      title: data.title || 'YouTube Video',
+      thumbnail: data.thumbnail || window.KimoUtils.getYouTubeThumbnail(window.KimoUtils.extractVideoId(originalUrl), 'maxres'),
+      duration: data.duration || 0,
+      author: data.author || 'Unknown Channel',
+      views: data.views || 0,
+      uploadDate: data.uploadDate || '',
+      description: data.description || '',
+      videoId: data.videoId || window.KimoUtils.extractVideoId(originalUrl) || '',
+      isShort: !!data.isShort,
+      isPlaylist: false,
+      downloadUrl: data.downloadUrl || '',
+      formats: Array.isArray(data.formats) ? data.formats : []
+    };
+  }
+
+  async function fetchMergedDownload(url, type) {
+    const candidates = activeBackend ? [activeBackend] : getBackendCandidates();
+    let lastError = null;
+
+    for (const base of candidates) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 600000);
+
+      try {
+        const response = await fetch(`${base}/api/download`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': '*/*' },
+          body: JSON.stringify({ url, type }),
+          signal: controller.signal
+        });
+
+        if (!response.ok) {
+          let msg = 'Download server error';
+          try {
+            const errData = await response.json();
+            msg = errData.error || msg;
+          } catch (e) {}
+          throw new Error(msg);
+        }
+
+        const blob = await response.blob();
+        const cd = response.headers.get('Content-Disposition') || '';
+        const match = cd.match(/filename="?([^";]+)"?/i);
+        const fallback = type === 'audio:mp3' ? 'KimoTube_audio.mp3' : 'KimoTube_video.mp4';
+        return { blob, filename: match ? match[1] : fallback };
+      } catch (error) {
+        lastError = error.name === 'AbortError' ? new Error('Download timed out. The server may be busy, try again.') : error;
+        console.warn('[KimoTube API] Download candidate failed:', base, lastError.message);
+      } finally {
+        clearTimeout(timeoutId);
+      }
+    }
+    throw lastError || new Error('No backend available');
   }
 
   function buildStandardFormats(downloadUrl, videoId) {
@@ -266,6 +400,15 @@ const KimoAPI = (() => {
     console.log('[KimoTube API] fetchVideoInfo:', url);
     const loadingEl = document.querySelector('.loading-text');
 
+    try {
+      if (loadingEl) loadingEl.textContent = 'Contacting download server...';
+      const data = await callBackendInfo(url);
+      if (loadingEl) loadingEl.textContent = 'Processing response...';
+      return parseBackendResponse(data, url);
+    } catch (backendError) {
+      console.warn('[KimoTube API] Backend failed, trying fallbacks:', backendError.message);
+    }
+
     if (isFileProtocol()) {
       if (loadingEl) loadingEl.textContent = 'file:// detected - trying oEmbed API...';
       const oembed = await fetchViaOEmbed(url);
@@ -303,6 +446,21 @@ const KimoAPI = (() => {
   async function fetchPlaylistInfo(url) {
     if (!window.KimoUtils.isPlaylistUrl(url)) {
       throw new Error('Not a valid playlist URL.');
+    }
+
+    try {
+      const data = await callBackendInfo(url);
+      if (data && Array.isArray(data.items) && data.items.length > 0) {
+        return {
+          title: data.title || 'YouTube Playlist',
+          cover: data.cover || '',
+          videoCount: data.videoCount || data.items.length,
+          items: data.items,
+          downloadAllUrl: data.downloadAllUrl || ''
+        };
+      }
+    } catch (error) {
+      console.warn('[KimoTube API] Backend playlist failed, trying fallbacks:', error.message);
     }
 
     try {
@@ -358,6 +516,8 @@ const KimoAPI = (() => {
     fetchVideoInfo,
     fetchPlaylistInfo,
     fetchDownloadUrl,
+    fetchMergedDownload,
+    checkBackend,
     getApiStatus
   };
 })();

@@ -8,6 +8,10 @@ const KimoApp = (() => {
     try {
       window.KimoUI.init();
       document.addEventListener('kimotube:analyze', handleAnalyze);
+      window.KimoUI.setBackendStatus('checking');
+      window.KimoAPI.checkBackend().then((status) => {
+        window.KimoUI.setBackendStatus(status.connected ? 'connected' : 'offline', status.base, status.ytDlp);
+      });
     } catch (e) {
       console.error('[KimoTube] App init error:', e);
     }
@@ -46,7 +50,7 @@ const KimoApp = (() => {
     window.KimoUI.clearResults();
     window.KimoUI.renderVideoInfo(info);
 
-    window.KimoUI.renderFormats(info.formats);
+    window.KimoUI.renderFormats(info.formats, info.sourceUrl);
 
     window.KimoUI.showToast('Video found! Select a format to download.', 'success');
 

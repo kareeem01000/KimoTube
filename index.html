@@ -69,7 +69,7 @@
   <!-- Navbar -->
   <nav class="navbar" role="navigation" aria-label="Main navigation">
     <div class="navbar-inner">
-      <a href="/" class="navbar-logo" aria-label="KimoTube Home">
+      <a href="./" class="navbar-logo" aria-label="KimoTube Home">
         <img src="assets/logo.svg" alt="KimoTube Logo" width="120" height="36">
       </a>
       <div class="navbar-actions">
@@ -139,6 +139,11 @@
           <div class="input-hint">
             <span class="material-symbols-outlined" style="font-size:16px">keyboard</span>
             Press <kbd>Ctrl+V</kbd> to paste &bull; <kbd>Enter</kbd> to analyze &bull; <kbd>Esc</kbd> to clear
+          </div>
+
+          <div class="backend-status" id="backendStatus" hidden>
+            <span class="backend-dot" aria-hidden="true"></span>
+            <span id="backendStatusText">Checking download server...</span>
           </div>
 
           <div class="examples" role="group" aria-label="Example links">
